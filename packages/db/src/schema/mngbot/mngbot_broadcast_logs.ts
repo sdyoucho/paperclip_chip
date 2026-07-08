@@ -20,9 +20,9 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
-import { agents } from "../agents";
-import { mngbotStreamers } from "./mngbot_streamers";
+import { companies } from "../companies.js";
+import { agents } from "../agents.js";
+import { mngbotStreamers } from "./mngbot_streamers.js";
 
 export const mngbotBroadcastLogs = pgTable(
   "mngbot_broadcast_logs",
