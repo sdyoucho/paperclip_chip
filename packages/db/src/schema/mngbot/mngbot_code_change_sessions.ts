@@ -30,9 +30,9 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
-import { agents } from "../agents";
-import { issues } from "../issues"; // ⚠️ 실제 export 경로/컬럼명 확인 필요 (Phase 4 GOVERNANCE.md 참고)
+import { companies } from "../companies.js";
+import { agents } from "../agents.js";
+import { issues } from "../issues.js"; // ⚠️ 실제 export 경로/컬럼명 확인 필요 (Phase 4 GOVERNANCE.md 참고)
 
 export const MNGBOT_CODE_SESSION_STATUSES = [
   "plan_pending",
