@@ -15,8 +15,8 @@
  * ⚠️ secrets.mngbot_internal_token은 Paperclip의 company secrets로 사전 등록 필요.
  */
 
-import { db } from "../client"; // 실제 Paperclip db client import 경로는 리포지토리 컨벤션에 맞춰 조정
-import { agents } from "../schema/agents";
+import { db } from "../client.js"; // 실제 Paperclip db client import 경로는 리포지토리 컨벤션에 맞춰 조정
+import { agents } from "../schema/agents.js";
 
 type MngbotAgentSeed = {
   slug: string;
