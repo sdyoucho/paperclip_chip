@@ -76,7 +76,7 @@ import { buildSubIssueDefaultsForViewer } from "../lib/subIssueDefaults";
 import { statusBadge } from "../lib/status-colors";
 import { workflowSort } from "../lib/workflow-sort";
 import { isSuccessfulRunHandoffRequired } from "../lib/successful-run-handoff";
-import { ISSUE_STATUSES, type Issue, type IssueStatus, type Project } from "@paperclipai/shared";
+import { deriveOriginatingActor, ISSUE_STATUSES, type Issue, type IssueStatus, type Project } from "@paperclipai/shared";
 const ISSUE_SEARCH_DEBOUNCE_MS = 250;
 const ISSUE_SEARCH_RESULT_LIMIT = 200;
 const ISSUE_BOARD_COLUMN_RESULT_LIMIT = 200;
@@ -1388,11 +1388,13 @@ export function IssuesList({
 
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           {/* View mode toggle */}
-          <div className="flex items-center border border-border rounded-md overflow-hidden mr-1">
+          <div className="flex items-center border border-border rounded-md overflow-hidden mr-1" role="group" aria-label="View mode">
             <button
               className={`p-1.5 transition-colors ${viewState.viewMode === "list" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => updateView({ viewMode: "list" })}
               title="List view"
+              aria-label="List view"
+              aria-pressed={viewState.viewMode === "list"}
             >
               <List className="h-3.5 w-3.5" />
             </button>
@@ -1400,6 +1402,8 @@ export function IssuesList({
               className={`p-1.5 transition-colors ${viewState.viewMode === "board" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => updateView({ viewMode: "board" })}
               title="Board view"
+              aria-label="Board view"
+              aria-pressed={viewState.viewMode === "board"}
             >
               <Columns3 className="h-3.5 w-3.5" />
             </button>
@@ -1576,7 +1580,7 @@ export function IssuesList({
                   {([
                     ["status", "Status"],
                     ["priority", "Priority"],
-                    ["assignee", "Assignee"],
+                    ["assignee", "Responsible"],
                     ["project", "Project"],
                     ["workspace", "Workspace"],
                     ["parent", "Parent Task"],
@@ -1701,6 +1705,10 @@ export function IssuesList({
                     currentUserId,
                     companyUserLabelMap,
                   ) ?? assigneeUserProfile?.label ?? null;
+                  const originatingActor = deriveOriginatingActor(issue);
+                  const originatingUserId = originatingActor?.kind === "user" ? originatingActor.id : null;
+                  const originatingViaAgentId =
+                    originatingActor?.kind === "user" ? originatingActor.viaAgentId ?? null : null;
                   const toggleCollapse = (e: { preventDefault: () => void; stopPropagation: () => void }) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -1755,7 +1763,7 @@ export function IssuesList({
                         target.scrollIntoView({ behavior: "smooth", block: "nearest" });
                         target.focus?.();
                       }}
-                      className="inline-flex items-center rounded-full border border-amber-400/45 bg-amber-50/60 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 hover:bg-amber-100/80 dark:border-amber-300/35 dark:bg-amber-400/10 dark:text-amber-300"
+                      className="inline-flex items-center rounded-full border border-amber-400/45 bg-amber-50/60 px-1.5 py-0.5 text-(length:--text-nano) font-medium text-amber-700 hover:bg-amber-100/80 dark:border-amber-300/35 dark:bg-amber-400/10 dark:text-amber-300"
                       title={firstVisibleBlockerTitle}
                       aria-label={firstVisibleBlockerTitle}
                     >
@@ -1795,7 +1803,7 @@ export function IssuesList({
                             {issueBadge ? (
                               issueBadge === "Paused" ? (
                                 <span
-                                  className={cn("ml-1.5 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium", statusBadge.paused)}
+                                  className={cn("ml-1.5 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-(length:--text-nano) font-medium", statusBadge.paused)}
                                   aria-label="Paused"
                                   title="Paused"
                                 >
@@ -1803,14 +1811,14 @@ export function IssuesList({
                                   Paused
                                 </span>
                               ) : (
-                                <span className="ml-1.5 inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+                                <span className="ml-1.5 inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-(length:--text-nano) font-medium text-amber-700 dark:text-amber-300">
                                   {issueBadge}
                                 </span>
                               )
                             ) : null}
                             {isSuccessfulRunHandoffRequired(issue) ? (
                               <span
-                                className="ml-1.5 inline-flex items-center gap-1 rounded-full border border-amber-400/45 bg-amber-50/60 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:border-amber-300/35 dark:bg-amber-400/10 dark:text-amber-300"
+                                className="ml-1.5 inline-flex items-center gap-1 rounded-full border border-amber-400/45 bg-amber-50/60 px-1.5 py-0.5 text-(length:--text-nano) font-medium text-amber-700 dark:border-amber-300/35 dark:bg-amber-400/10 dark:text-amber-300"
                                 aria-label="Needs next step"
                                 title="This task needs a next step"
                               >
@@ -1828,7 +1836,7 @@ export function IssuesList({
                             </button>
                           ) : (
                             <span className="inline-flex items-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                              <StatusIcon status={issue.status} blockerAttention={issue.blockerAttention} onChange={(s) => onUpdateIssue(issue.id, { status: s })} />
+                              <StatusIcon status={issue.status} size="lg" blockerAttention={issue.blockerAttention} onChange={(s) => onUpdateIssue(issue.id, { status: s })} />
                             </span>
                           )
                         }
@@ -1855,7 +1863,7 @@ export function IssuesList({
                               checklistStepNumber={checklistStepNumber}
                               statusSlot={(
                                 <span className="inline-flex items-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                                  <StatusIcon status={issue.status} blockerAttention={issue.blockerAttention} onChange={(s) => onUpdateIssue(issue.id, { status: s })} />
+                                  <StatusIcon status={issue.status} size="lg" blockerAttention={issue.blockerAttention} onChange={(s) => onUpdateIssue(issue.id, { status: s })} />
                                 </span>
                               )}
                             />
@@ -1879,6 +1887,10 @@ export function IssuesList({
                               assigneeName={agentName(issue.assigneeAgentId)}
                               assigneeUserName={assigneeUserLabel}
                               assigneeUserAvatarUrl={assigneeUserProfile?.image ?? null}
+                              creatorAgentName={agentName(issue.createdByAgentId)}
+                              creatorUserName={originatingUserId ? (companyUserProfileMap.get(originatingUserId)?.label ?? null) : null}
+                              creatorUserAvatarUrl={originatingUserId ? (companyUserProfileMap.get(originatingUserId)?.image ?? null) : null}
+                              viaAgentName={originatingViaAgentId ? agentName(originatingViaAgentId) : null}
                               currentUserId={currentUserId}
                               parentIdentifier={parentIssue?.identifier ?? null}
                               parentTitle={parentIssue?.title ?? null}
@@ -1896,7 +1908,7 @@ export function IssuesList({
                                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                     >
                                       {issue.assigneeAgentId && agentName(issue.assigneeAgentId) ? (
-                                        <Identity name={agentName(issue.assigneeAgentId)!} size="sm" className="min-w-0" />
+                                        <Identity name={agentName(issue.assigneeAgentId)!} size="sm" shape="square" className="min-w-0" />
                                       ) : issue.assigneeUserId ? (
                                         <Identity
                                           name={assigneeUserLabel ?? "User"}
@@ -1922,7 +1934,7 @@ export function IssuesList({
                                   >
                                     <input
                                       className="mb-1 w-full border-b border-border bg-transparent px-2 py-1.5 text-xs outline-none placeholder:text-muted-foreground/50"
-                                      placeholder="Search assignees..."
+                                      placeholder="Search responsible..."
                                       value={assigneeSearch}
                                       onChange={(e) => setAssigneeSearch(e.target.value)}
                                       autoFocus
@@ -1939,7 +1951,7 @@ export function IssuesList({
                                           assignIssue(issue.id, null, null);
                                         }}
                                       >
-                                        No assignee
+                                        No responsible
                                       </button>
                                       {currentUserId && (
                                         <button

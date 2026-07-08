@@ -44,21 +44,29 @@ const STREAMLINED_TOGGLE_SELECTOR =
   'button[aria-label="Toggle streamlined left navigation experimental setting"]';
 const TASK_WATCHDOGS_TOGGLE_SELECTOR =
   'button[aria-label="Toggle task watchdogs experimental setting"]';
+const GOALS_SIDEBAR_LINK_TOGGLE_SELECTOR =
+  'button[aria-label="Toggle goals sidebar link experimental setting"]';
+const SERVER_INFO_TOGGLE_SELECTOR =
+  'button[aria-label="Toggle server info debug view experimental setting"]';
 
 function defaultExperimentalSettings(): InstanceExperimentalSettingsPayload {
   return {
     enableEnvironments: false,
     enableIsolatedWorkspaces: false,
     enableStreamlinedLeftNavigation: true,
+    enablePipelines: false,
     enableConferenceRoomChat: false,
     enableIssuePlanDecompositions: false,
     enableExperimentalFileViewer: false,
     enableExternalObjects: false,
+    enableGoalsSidebarLink: false,
     enableTaskWatchdogs: false,
     enableCloudSync: false,
+    enableServerInfoDebugView: false,
     autoRestartDevServerWhenIdle: false,
     enableIssueGraphLivenessAutoRecovery: false,
     issueGraphLivenessAutoRecoveryLookbackHours: 24,
+    enableWorkspaceBranchReconcileForward: false,
   };
 }
 
@@ -118,9 +126,16 @@ describe("InstanceExperimentalSettings — Conference Room Chat card (PAP-11233)
     await renderPage();
 
     const headings = [...container.querySelectorAll("section h2")].map((h) => h.textContent);
-    expect(headings).toContain("Streamlined Left Navigation Bar");
     expect(headings).not.toContain("Conference Room Chat");
     expect(container.querySelector(CONFERENCE_TOGGLE_SELECTOR)).toBeNull();
+  });
+
+  it("does not render the Pipelines experimental setting for now", async () => {
+    await renderPage();
+
+    const headings = [...container.querySelectorAll("section h2")].map((h) => h.textContent);
+    expect(headings).not.toContain("Pipelines");
+    expect(container.querySelector('button[aria-label="Toggle pipelines experimental setting"]')).toBeNull();
   });
 
   it("does not render the toggle even when the stored flag is currently enabled", async () => {
@@ -135,21 +150,13 @@ describe("InstanceExperimentalSettings — Conference Room Chat card (PAP-11233)
     expect(mockInstanceSettingsApi.updateExperimental).not.toHaveBeenCalled();
   });
 
-  it("renders the Streamlined Left Navigation toggle on by default and patches opt-out", async () => {
+  it("no longer renders the Streamlined Left Navigation toggle (opt-out retired, PAP-12472)", async () => {
     await renderPage();
 
-    const toggle = container.querySelector<HTMLButtonElement>(STREAMLINED_TOGGLE_SELECTOR);
-    expect(toggle?.getAttribute("aria-checked")).toBe("true");
-
-    await act(async () => {
-      toggle?.click();
-    });
-    await flushReact();
-
-    expect(mockInstanceSettingsApi.updateExperimental).toHaveBeenCalledWith({
-      enableStreamlinedLeftNavigation: false,
-    });
-    expect(toggle?.getAttribute("aria-checked")).toBe("false");
+    const headings = [...container.querySelectorAll("section h2")].map((h) => h.textContent);
+    expect(headings).not.toContain("Streamlined Left Navigation Bar");
+    expect(container.querySelector(STREAMLINED_TOGGLE_SELECTOR)).toBeNull();
+    expect(mockInstanceSettingsApi.updateExperimental).not.toHaveBeenCalled();
   });
 
   it("renders and patches the Task Watchdogs experimental toggle on and off", async () => {
@@ -191,5 +198,49 @@ describe("InstanceExperimentalSettings — Conference Room Chat card (PAP-11233)
     expect(mockInstanceSettingsApi.updateExperimental).toHaveBeenLastCalledWith({
       enableTaskWatchdogs: false,
     });
+  });
+
+  it("renders and patches the Goals Sidebar Link experimental toggle", async () => {
+    await renderPage();
+
+    expect(container.textContent).toContain("Goals Sidebar Link");
+    expect(container.textContent).toContain(
+      "Restore the Goals item in the main sidebar while the goals surface is being evaluated.",
+    );
+
+    const toggle = container.querySelector<HTMLButtonElement>(GOALS_SIDEBAR_LINK_TOGGLE_SELECTOR);
+    expect(toggle?.getAttribute("aria-checked")).toBe("false");
+
+    await act(async () => {
+      toggle?.click();
+    });
+    await flushReact();
+
+    expect(mockInstanceSettingsApi.updateExperimental).toHaveBeenCalledWith({
+      enableGoalsSidebarLink: true,
+    });
+    expect(toggle?.getAttribute("aria-checked")).toBe("true");
+  });
+
+  it("renders and patches the Server Info Debug View experimental toggle", async () => {
+    await renderPage();
+
+    expect(container.textContent).toContain("Server Info Debug View");
+    expect(container.textContent).toContain(
+      'Show a "Server" section in the account drawer with the current server restart time and running commit.',
+    );
+
+    const toggle = container.querySelector<HTMLButtonElement>(SERVER_INFO_TOGGLE_SELECTOR);
+    expect(toggle?.getAttribute("aria-checked")).toBe("false");
+
+    await act(async () => {
+      toggle?.click();
+    });
+    await flushReact();
+
+    expect(mockInstanceSettingsApi.updateExperimental).toHaveBeenCalledWith({
+      enableServerInfoDebugView: true,
+    });
+    expect(toggle?.getAttribute("aria-checked")).toBe("true");
   });
 });

@@ -1,7 +1,7 @@
 import { useMemo, useState, type DragEvent, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IssueAttachment } from "@paperclipai/shared";
-import { Download, ExternalLink, FileText, Paperclip, Trash2 } from "lucide-react";
+import { Download, ExternalLink, FileText, Maximize2, Paperclip, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FoldCurtain } from "./FoldCurtain";
 import { MarkdownBody } from "./MarkdownBody";
@@ -47,14 +47,27 @@ function AttachmentActions({
   attachment,
   onDelete,
   deletePending,
+  onPreview,
 }: {
   attachment: IssueAttachment;
   onDelete: (attachmentId: string) => void;
   deletePending?: boolean;
+  onPreview?: (attachment: IssueAttachment) => void;
 }) {
   const filename = attachmentFilename(attachment);
   return (
     <div className="flex shrink-0 items-center gap-1">
+      {onPreview ? (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Browse gallery"
+          aria-label={`Browse ${filename} in gallery`}
+          onClick={() => onPreview(attachment)}
+        >
+          <Maximize2 className="h-4 w-4" />
+        </Button>
+      ) : null}
       <Button asChild variant="ghost" size="icon-sm" title="Open in new tab">
         <a href={attachmentOpenPath(attachment)} target="_blank" rel="noreferrer" aria-label={`Open ${filename}`}>
           <ExternalLink className="h-4 w-4" />
@@ -81,7 +94,7 @@ function AttachmentActions({
 
 function AttachmentMeta({ attachment }: { attachment: IssueAttachment }) {
   return (
-    <p className="mt-0.5 text-[11px] text-muted-foreground">
+    <p className="mt-0.5 text-(length:--text-micro) text-muted-foreground">
       Attachment · {attachment.contentType} · {formatBytes(attachment.byteSize)}
     </p>
   );
@@ -121,7 +134,7 @@ function MarkdownAttachmentCard({
           <p className="px-1 py-2 text-xs text-destructive">Could not load markdown preview.</p>
         ) : (
           <FoldCurtain>
-            <MarkdownBody className="paperclip-edit-in-place-content min-h-[220px] text-[15px] leading-7" softBreaks={false}>
+            <MarkdownBody className="paperclip-edit-in-place-content min-h-(--sz-220px) text-sm leading-7" softBreaks={false}>
               {data ?? ""}
             </MarkdownBody>
           </FoldCurtain>
@@ -135,10 +148,12 @@ function VideoAttachmentCard({
   attachment,
   onDelete,
   deletePending,
+  onPreview,
 }: {
   attachment: IssueAttachment;
   onDelete: (attachmentId: string) => void;
   deletePending?: boolean;
+  onPreview?: (attachment: IssueAttachment) => void;
 }) {
   const filename = attachmentFilename(attachment);
   return (
@@ -149,7 +164,12 @@ function VideoAttachmentCard({
           <p className="break-words text-sm font-semibold text-foreground">{filename}</p>
           <AttachmentMeta attachment={attachment} />
         </div>
-        <AttachmentActions attachment={attachment} onDelete={onDelete} deletePending={deletePending} />
+        <AttachmentActions
+          attachment={attachment}
+          onDelete={onDelete}
+          deletePending={deletePending}
+          onPreview={onPreview}
+        />
       </div>
     </div>
   );
@@ -178,7 +198,7 @@ function GenericAttachmentRow({
         >
           {filename}
         </a>
-        <p className="truncate text-[11px] text-muted-foreground">
+        <p className="truncate text-(length:--text-micro) text-muted-foreground">
           Attachment · {attachment.contentType} · {formatBytes(attachment.byteSize)}
         </p>
       </div>
@@ -337,6 +357,7 @@ export function IssueAttachmentsSection({
               attachment={attachment}
               onDelete={requestDelete}
               deletePending={deletePending}
+              onPreview={onImageClick}
             />
           ))}
         </div>

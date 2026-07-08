@@ -10,8 +10,11 @@ describe("instance settings service", () => {
       enableExperimentalFileViewer: true,
       enableTaskWatchdogs: true,
       enableCloudSync: true,
+      enableGoalsSidebarLink: true,
+      enableServerInfoDebugView: true,
       autoRestartDevServerWhenIdle: true,
       enableIssueGraphLivenessAutoRecovery: true,
+      enableWorkspaceBranchReconcileForward: true,
       issueGraphLivenessAutoRecoveryLookbackHours: 48,
       enableNewestFirstIssueThread: true,
     })).toEqual({
@@ -20,12 +23,16 @@ describe("instance settings service", () => {
       enableStreamlinedLeftNavigation: true,
       enableConferenceRoomChat: false,
       enableExternalObjects: false,
+      enablePipelines: false,
       enableIssuePlanDecompositions: true,
       enableExperimentalFileViewer: true,
       enableTaskWatchdogs: true,
       enableCloudSync: true,
+      enableGoalsSidebarLink: true,
+      enableServerInfoDebugView: true,
       autoRestartDevServerWhenIdle: true,
       enableIssueGraphLivenessAutoRecovery: true,
+      enableWorkspaceBranchReconcileForward: true,
       issueGraphLivenessAutoRecoveryLookbackHours: 48,
     });
   });
@@ -44,6 +51,31 @@ describe("instance settings service", () => {
     expect(normalizeExperimentalSettings({}).enableTaskWatchdogs).toBe(false);
     expect(
       normalizeExperimentalSettings({ enableExperimentalFileViewer: true }).enableTaskWatchdogs,
+    ).toBe(false);
+  });
+
+  it("defaults enableServerInfoDebugView to false for empty and legacy stored settings", () => {
+    expect(normalizeExperimentalSettings(undefined).enableServerInfoDebugView).toBe(false);
+    expect(normalizeExperimentalSettings({}).enableServerInfoDebugView).toBe(false);
+    expect(
+      normalizeExperimentalSettings({ autoRestartDevServerWhenIdle: true }).enableServerInfoDebugView,
+    ).toBe(false);
+  });
+
+  it("defaults enableGoalsSidebarLink to false for empty and legacy stored settings", () => {
+    expect(normalizeExperimentalSettings(undefined).enableGoalsSidebarLink).toBe(false);
+    expect(normalizeExperimentalSettings({}).enableGoalsSidebarLink).toBe(false);
+    expect(
+      normalizeExperimentalSettings({ enableStreamlinedLeftNavigation: true }).enableGoalsSidebarLink,
+    ).toBe(false);
+  });
+
+  it("defaults enableWorkspaceBranchReconcileForward to false for empty and legacy stored settings", () => {
+    expect(normalizeExperimentalSettings(undefined).enableWorkspaceBranchReconcileForward).toBe(false);
+    expect(normalizeExperimentalSettings({}).enableWorkspaceBranchReconcileForward).toBe(false);
+    expect(
+      normalizeExperimentalSettings({ enableIssueGraphLivenessAutoRecovery: true })
+        .enableWorkspaceBranchReconcileForward,
     ).toBe(false);
   });
 
