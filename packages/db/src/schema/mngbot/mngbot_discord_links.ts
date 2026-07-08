@@ -14,8 +14,8 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
-import { issues } from "../issues"; // ⚠️ 경로 확인 필요
+import { companies } from "../companies.js";
+import { issues } from "../issues.js"; // ⚠️ 경로 확인 필요
 
 export const mngbotDiscordLinks = pgTable(
   "mngbot_discord_links",
