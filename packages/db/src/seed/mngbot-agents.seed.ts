@@ -18,6 +18,7 @@
 import { db } from "../client.js"; // 실제 Paperclip db client import 경로는 리포지토리 컨벤션에 맞춰 조정
 import { agents } from "../schema/agents.js";
 
+
 type MngbotAgentSeed = {
   slug: string;
   name: string;
