@@ -20,8 +20,8 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
-import { agents } from "../agents";
+import { companies } from "../companies.js";
+import { agents } from "../agents.js";
 
 export const mngbotFixedCosts = pgTable(
   "mngbot_fixed_costs",
