@@ -18,7 +18,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
+import { companies } from "../companies.js";
 
 export const mngbotStreamers = pgTable(
   "mngbot_streamers",
