@@ -26,7 +26,7 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "../companies";
+import { companies } from "../companies.js";
 
 export const MNGBOT_NOTION_ENTITY_TYPES = [
   "streamer",
