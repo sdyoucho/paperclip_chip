@@ -245,7 +245,7 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
   app.patch(`${r}/code-change-sessions/:id`, auth, h(async (req, res) => {
     const patch: any = { ...req.body, updatedAt: new Date() };
     const [row] = await db.update(mngbotCodeChangeSessions).set(patch)
-      .where(eq(mngbotCodeChangeSessions.id, req.params.id)).returning();
+      .where(eq(mngbotCodeChangeSessions.id, String(req.params.id))).returning();
     res.json(row);
   }));
 
@@ -270,7 +270,7 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
       patch.lastSeenCommentCount = String(req.body.lastSeenCommentCount);
     }
     const [row] = await db.update(mngbotDiscordLinks).set(patch)
-      .where(eq(mngbotDiscordLinks.issueId, req.params.issueId)).returning();
+      .where(eq(mngbotDiscordLinks.issueId, String(req.params.issueId))).returning();
     res.json(row);
   }));
 
