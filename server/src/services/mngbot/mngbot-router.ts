@@ -123,14 +123,14 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
     if (req.body.description !== undefined) patch.description = req.body.description;
     // 8자리 짧은 ID 지원: 앞자리가 일치하는 행을 찾아 갱신
     const [row] = await db.update(mngbotScheduleItems).set(patch)
-      .where(sql`${mngbotScheduleItems.id}::text like ${req.params.id + "%"}`)
+      .where(sql`${mngbotScheduleItems.id}::text like ${String(req.params.id) + "%"}`)
       .returning();
     res.json(row ?? { error: "not found" });
   }));
 
   app.delete(`${r}/schedule-items/:id`, auth, h(async (req, res) => {
     await db.delete(mngbotScheduleItems)
-      .where(sql`${mngbotScheduleItems.id}::text like ${req.params.id + "%"}`);
+      .where(sql`${mngbotScheduleItems.id}::text like ${String(req.params.id) + "%"}`);
     res.json({ ok: true });
   }));
 
@@ -222,7 +222,7 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
     if (patch.approvedAt) patch.approvedAt = new Date(patch.approvedAt);
     if (patch.completedAt) patch.completedAt = new Date(patch.completedAt);
     const [row] = await db.update(mngbotLearningItems).set(patch)
-      .where(eq(mngbotLearningItems.id, req.params.id)).returning();
+      .where(eq(mngbotLearningItems.id, String(req.params.id))).returning();
     res.json(row);
   }));
 
