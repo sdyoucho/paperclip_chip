@@ -1,0 +1,24 @@
+name: Seed Mngbot Agents
+
+on:
+  workflow_dispatch:
+    inputs:
+      companyId:
+        description: "회사 ID (예: CHI)"
+        required: true
+        default: "CHI"
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install -g pnpm tsx
+      - run: pnpm install --frozen-lockfile || pnpm install
+      - name: Run seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: tsx packages/db/src/seed/mngbot-agents.seed.ts --companyId=${{ github.event.inputs.companyId }}
