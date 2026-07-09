@@ -48,6 +48,7 @@ import { assetRoutes } from "./routes/assets.js";
 import { accessRoutes } from "./routes/access.js";
 import { pluginRoutes } from "./routes/plugins.js";
 import { adapterRoutes } from "./routes/adapters.js";
+import { registerMngbotRoutes } from "./services/mngbot/mngbot-router.js";
 import { pluginUiStaticRoutes } from "./routes/plugin-ui-static.js";
 import { readBrandedStaticIndexHtml } from "./static-index-html.js";
 import { applyUiBranding } from "./ui-branding.js";
@@ -327,6 +328,7 @@ export async function createApp(
     ),
   );
   api.use(adapterRoutes());
+  registerMngbotRoutes(app, db);
   api.use(
     accessRoutes(db, {
       deploymentMode: opts.deploymentMode,
