@@ -242,21 +242,19 @@ export async function seedMngbotAgents(companyId: string) {
 }
 
 // CLI 직접 실행 지원 (예: tsx mngbot-agents.seed.ts --companyId=<uuid>)
-if (require.main === module) {
-  const arg = process.argv.find((a) => a.startsWith("--companyId="));
-  const companyId = arg?.split("=")[1];
-  if (!companyId) {
-    console.error("사용법: tsx mngbot-agents.seed.ts --companyId=<uuid>");
-    process.exit(1);
-  }
-  seedMngbotAgents(companyId)
-    .then(({ haecho, reports }) => {
-      console.log(`✅ haecho 생성: ${haecho.id}`);
-      console.log(`✅ 나머지 ${reports.length}개 에이전트 생성 (reportsTo=haecho)`);
-      process.exit(0);
-    })
-    .catch((err) => {
-      console.error("❌ 시드 실패:", err);
-      process.exit(1);
-    });
+const arg = process.argv.find((a) => a.startsWith("--companyId="));
+const companyId = arg?.split("=")[1];
+if (!companyId) {
+  console.error("사용법: tsx mngbot-agents.seed.ts --companyId=<uuid>");
+  process.exit(1);
 }
+seedMngbotAgents(companyId)
+  .then(({ haecho, reports }) => {
+    console.log(`✅ haecho 생성: ${haecho.id}`);
+    console.log(`✅ 나머지 ${reports.length}개 에이전트 생성 (reportsTo=haecho)`);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error("❌ 시드 실패:", err);
+    process.exit(1);
+  });
