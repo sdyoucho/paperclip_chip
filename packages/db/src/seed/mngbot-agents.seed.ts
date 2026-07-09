@@ -15,7 +15,14 @@
  * ⚠️ secrets.mngbot_internal_token은 Paperclip의 company secrets로 사전 등록 필요.
  */
 
-import { db } from "../client.js"; // 실제 Paperclip db client import 경로는 리포지토리 컨벤션에 맞춰 조정
+import { createDb } from "../client.js";
+
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL 환경변수가 필요합니다.");
+}
+const db = createDb(DATABASE_URL);
+
 import { agents } from "../schema/agents.js";
 
 
