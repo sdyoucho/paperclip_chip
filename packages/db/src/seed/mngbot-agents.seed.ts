@@ -15,6 +15,7 @@
  * ⚠️ secrets.mngbot_internal_token은 Paperclip의 company secrets로 사전 등록 필요.
  */
 
+import { agents } from "../schema/agents.js";
 import { createDb } from "../client.js";
 
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -23,7 +24,12 @@ if (!DATABASE_URL) {
 }
 const db = createDb(DATABASE_URL);
 
-import { agents } from "../schema/agents.js";
+if (process.env.LIST_COMPANIES === "1") {
+  const companies = await db.query.companies.findMany();
+  console.log("=== 회사 목록 ===");
+  console.log(JSON.stringify(companies.map((c: any) => ({ id: c.id, name: c.name, slug: c.slug })), null, 2));
+  process.exit(0);
+}
 
 
 type MngbotAgentSeed = {
