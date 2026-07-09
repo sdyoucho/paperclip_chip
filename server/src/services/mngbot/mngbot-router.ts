@@ -27,7 +27,7 @@ import {
   mngbotLearningItems,
   mngbotCodeChangeSessions,
   mngbotDiscordLinks,
-} from "@paperclipai/db/schema/mngbot";
+} from "@paperclipai/db";
 
 // db 타입은 느슨하게 받는다(코어의 정확한 Db 타입에 의존하지 않도록).
 type AnyDb = any;
@@ -162,7 +162,7 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
 
   app.delete(`${r}/fixed-costs/by-name/:name`, auth, h(async (req, res) => {
     const companyId = String(req.query.companyId);
-    const name = decodeURIComponent(req.params.name);
+    const name = decodeURIComponent(String(req.params.name));
     await db.delete(mngbotFixedCosts).where(and(
       eq(mngbotFixedCosts.companyId, companyId),
       eq(mngbotFixedCosts.name, name),
@@ -172,7 +172,7 @@ export function registerMngbotRoutes(app: Express, db: AnyDb): void {
 
   app.post(`${r}/fixed-costs/by-name/:name/payments`, auth, h(async (req, res) => {
     const { companyId, paidAt, recordedByAgentId } = req.body;
-    const name = decodeURIComponent(req.params.name);
+    const name = decodeURIComponent(String(req.params.name));
     const [cost] = await db.select().from(mngbotFixedCosts).where(and(
       eq(mngbotFixedCosts.companyId, companyId),
       eq(mngbotFixedCosts.name, name),
