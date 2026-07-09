@@ -6,12 +6,12 @@
  * drizzle-kit이 마이그레이션 생성 시 자동으로 인식한다.
  */
 
-export * from "./mngbot_streamers";
-export * from "./mngbot_broadcast_logs";
-export * from "./mngbot_schedule_items";
-export * from "./mngbot_fixed_costs";
-export * from "./mngbot_reports";
-export * from "./mngbot_learning_items";
-export * from "./mngbot_code_change_sessions";
-export * from "./mngbot_notion_sync_log";
-export * from "./mngbot_discord_links";
+export * from "./mngbot_streamers.js";
+export * from "./mngbot_broadcast_logs.js";
+export * from "./mngbot_schedule_items.js";
+export * from "./mngbot_fixed_costs.js";
+export * from "./mngbot_reports.js";
+export * from "./mngbot_learning_items.js";
+export * from "./mngbot_code_change_sessions.js";
+export * from "./mngbot_notion_sync_log.js";
+export * from "./mngbot_discord_links.js";
